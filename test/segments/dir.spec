@@ -576,6 +576,29 @@ function testTruncateToUniqueWorks() {
   rm -fr /tmp/powerlevel9k-test
 }
 
+function testTruncateToUniqueNotLastWorks() {
+  local -a POWERLEVEL9K_LEFT_PROMPT_ELEMENTS
+  POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir)
+  local POWERLEVEL9K_DIR_OMIT_FIRST_CHARACTER=true
+  local POWERLEVEL9K_DIR_PATH_SEPARATOR='xXx'
+  local POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
+  local POWERLEVEL9K_SHORTEN_STRATEGY='truncate_to_unique_not_last'
+
+  # Load Powerlevel9k
+  source ${P9K_HOME}/powerlevel9k.zsh-theme
+
+  mkdir -p /tmp/powerlevel9k-test/adam/devl
+  mkdir -p /tmp/powerlevel9k-test/alice/devl
+  mkdir -p /tmp/powerlevel9k-test/alice/docs
+  mkdir -p /tmp/powerlevel9k-test/bob/docs
+  cd /tmp/powerlevel9k-test/alice/devl
+
+  assertEquals "%K{004} %F{000}txXxpowxXxalicexXxdevl %k%F{004}%f " "$(build_left_prompt)"
+
+  cd -
+  rm -fr /tmp/powerlevel9k-test
+}
+
 function testBoldHomeDirWorks() {
   local -a POWERLEVEL9K_LEFT_PROMPT_ELEMENTS
   POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir)

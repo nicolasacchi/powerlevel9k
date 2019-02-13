@@ -859,6 +859,28 @@ prompt_dir() {
           [[ $current_path == "~"* ]] && current_path="~${trunc_path//${home_path}/}" || current_path="/${trunc_path}"
         fi
       ;;
+      truncate_to_unique_not_last)
+        # for each parent path component find the shortest unique beginning
+        # but not for the current dir, see truncate_to_unique
+        if (( ${#current_path} > 1 )); then # root and home are exceptions and won't have paths
+          # cheating here to retain ~ as home folder
+          local home_path="$(getUniqueFolder $HOME)"
+          local num=$(( ${#paths} - ${POWERLEVEL9K_SHORTEN_DIR_LENGTH} ))
+          if (( ${POWERLEVEL9K_SHORTEN_DIR_LENGTH} > ${#paths} )) ; then
+            trunc_path=""
+          else
+            trunc_path="$(getUniqueFolder $PWD)"
+            for (( i=0; i<$POWERLEVEL9K_SHORTEN_DIR_LENGTH; i++ )); do
+              trunc_path="${trunc_path%/*}"
+            done
+          fi
+          not_trunc_path="${PWD//${HOME}/}"
+          for (( i=0; i<${#paths}-${POWERLEVEL9K_SHORTEN_DIR_LENGTH}+1; i++ )); do
+            not_trunc_path="${not_trunc_path#*/}"
+          done
+          [[ $current_path == "~"* ]] && current_path="~${trunc_path//${home_path}/}${not_trunc_path}" || current_path="/${trunc_path}/${not_trunc_path}"
+        fi
+      ;;
       truncate_with_folder_marker)
         if (( ${#paths} > 0 )); then # root and home are exceptions and won't have paths, so skip this
           local last_marked_folder marked_folder
