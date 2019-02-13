@@ -114,16 +114,16 @@ prompt_dir() {
           # cheating here to retain ~ as home folder
           local home_path="$(__p9k_get_unique_path $HOME)"
           local num=$(( ${#paths} - ${POWERLEVEL9K_SHORTEN_DIR_LENGTH} ))
-          if (( ${POWERLEVEL9K_SHORTEN_DIR_LENGTH} > ${#paths} )) ; then
+          if (( ${PK9_DIR_SHORTEN_LENGTH} > ${#paths} )) ; then
             trunc_path=""
           else
             trunc_path="$(__p9k_get_unique_path $PWD)"
-            for (( i=0; i<$POWERLEVEL9K_SHORTEN_DIR_LENGTH; i++ )); do
+            for (( i=0; i<$P9K_DIR_SHORTEN_LENGTH; i++ )); do
               trunc_path="${trunc_path%/*}"
             done
           fi
           not_trunc_path="${PWD//${HOME}/}"
-          for (( i=0; i<${#paths}-${POWERLEVEL9K_SHORTEN_DIR_LENGTH}+1; i++ )); do
+          for (( i=0; i<${#paths}-${P9K_DIR_SHORTEN_LENGTH}+1; i++ )); do
             not_trunc_path="${not_trunc_path#*/}"
           done
           current_path="${pathPrefix}${trunc_path//${home_path}/}${not_trunc_path}"
