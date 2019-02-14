@@ -37,7 +37,7 @@ function testDirPathAbsoluteWorks() {
 
   typeset -a _strategies
   # Do not check truncate_to_last
-  _strategies=( truncate_from_left truncate_from_right truncate_middle truncate_to_first_and_last truncate_absolute truncate_to_unique truncate_with_folder_marker truncate_with_package_name )
+  _strategies=( truncate_from_left truncate_from_right truncate_middle truncate_to_first_and_last truncate_absolute truncate_to_unique truncate_with_folder_marker truncate_with_package_name truncate_to_unique_not_last)
 
   for strategy in ${_strategies}; do
     local P9K_DIR_PATH_ABSOLUTE=true
@@ -614,6 +614,32 @@ function testTruncateToUniqueWorks() {
   cd /tmp/powerlevel9k-test/alice/devl
 
   assertEquals "%K{004} %F{000}${test_path}xXxalxXxde %k%F{004}%f " "$(__p9k_build_left_prompt)"
+
+  cd -
+  rm -fr /tmp/powerlevel9k-test
+}
+
+function testTruncateToUniqueNotLastWorks() {
+  typeset -a P9K_LEFT_PROMPT_ELEMENTS
+  P9K_LEFT_PROMPT_ELEMENTS=(dir)
+  local P9K_DIR_OMIT_FIRST_CHARACTER=true
+  local P9K_DIR_PATH_SEPARATOR='xXx'
+  local P9K_DIR_SHORTEN_LENGTH=2
+  local P9K_DIR_SHORTEN_STRATEGY='truncate_to_unique_not_last'
+
+  mkdir -p /tmp/powerlevel9k-test/adam/devl
+  mkdir -p /tmp/powerlevel9k-test/alice/devl
+  mkdir -p /tmp/powerlevel9k-test/alice/docs
+  mkdir -p /tmp/powerlevel9k-test/bob/docs
+
+  # get unique name for tmp folder - on macOS, this is /private/tmp
+  cd /tmp/powerlevel9k-test
+  local test_path=${$(__p9k_get_unique_path $PWD:A)//\//$P9K_DIR_PATH_SEPARATOR}
+  cd -
+
+  cd /tmp/powerlevel9k-test/alice/devl
+
+  assertEquals "%K{004} %F{000}txXxpowxXxalicexXxdevl %k%F{004}%f " "$(__p9k_build_left_prompt)"
 
   cd -
   rm -fr /tmp/powerlevel9k-test
